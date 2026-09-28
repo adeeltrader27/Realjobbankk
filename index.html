@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Job Bank - All Pakistan Job Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf for Professional CV Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Loading Indicator -->
+    <div id="loading-bar" class="loading-bar"></div>
+
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-brand">
+            <i class="fa-solid fa-briefcase"></i> <span>Real Job Bank</span>
+        </div>
+        <div class="search-container">
+            <input type="text" id="global-search" placeholder="Search jobs by title or keyword..." onkeyup="filterJobs()">
+            <select id="province-filter" onchange="filterJobs()">
+                <option value="">All Provinces</option>
+                <option value="Punjab">Punjab</option>
+                <option value="Sindh">Sindh</option>
+                <option value="KPK">KPK</option>
+                <option value="Balochistan">Balochistan</option>
+                <option value="Islamabad">Islamabad</option>
+            </select>
+        </div>
+        <nav class="nav-links">
+            <a href="#" onclick="showSection('home-section')" class="active"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="#" onclick="showSection('dashboard-section')"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <a href="#" onclick="showSection('applications-section')"><i class="fa-solid fa-file-lines"></i> My Applied Jobs</a>
+            <div id="auth-nav-item">
+                <button class="btn-primary" onclick="openAuthModal('login')">Login / Register</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+
+        <!-- HOME SECTION -->
+        <section id="home-section" class="content-section active">
+            <!-- Intro Banner Animation -->
+            <div class="intro-banner-hero">
+                <h1>Welcome to Real Job Bank</h1>
+                <p>Find your dream career across all Pakistan with instant digital applications & professional CV generation.</p>
+            </div>
+
+            <!-- Auto Banner Slider -->
+            <div class="slider-container" id="banner-slider">
+                <button class="slider-close" onclick="closeBanner()"><i class="fa-solid fa-xmark"></i></button>
+                <div class="slide active" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80')">
+                    <div class="slide-content">
+                        <h2>Government & Private Jobs in Pakistan</h2>
+                        <p>Apply in 1 click with automated A4 CV generation.</p>
+                    </div>
+                </div>
+                <div class="slide" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1200&q=80')">
+                    <div class="slide-content">
+                        <h2>Top Employers & IT Hubs</h2>
+                        <p>Multan, Lahore, Islamabad, Karachi & more.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Listings Header -->
+            <div class="section-heading">
+                <h2><i class="fa-solid fa-fire">} Latest Job Openings</h2>
+                <span id="job-count">Showing all jobs</span>
+            </div>
+
+            <!-- Jobs Grid -->
+            <div id="jobs-grid" class="jobs-grid">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard-section" class="content-section">
+            <div class="dashboard-header">
+                <h2><i class="fa-solid fa-gauge-high"></i> Candidate Dashboard</h2>
+                <div id="user-profile-summary" class="profile-card-mini">
+                    <!-- Dynamic user info -->
+                </div>
+            </div>
+            <div class="dashboard-stats">
+                <div class="stat-box">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <div>
+                        <h3 id="stat-applied">0</h3>
+                        <p>Total Applied</p>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <div>
+                        <h3 id="stat-review">0</h3>
+                        <p>Under Review</p>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <h3 id="stat-approved">0</h3>
+                        <p>Approved</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MY APPLIED JOBS SECTION -->
+        <section id="applications-section" class="content-section">
+            <h2><i class="fa-solid fa-folder-open"></i> My Applied Jobs & CV Downloads</h2>
+            <div id="applied-jobs-list" class="applied-list">
+                <!-- Dynamically populated applied jobs with print/download buttons -->
+            </div>
+        </section>
+
+        <!-- ADMIN PANEL SECTION -->
+        <section id="admin-section" class="content-section">
+            <div class="admin-header">
+                <h2><i class="fa-solid fa-shield-halved"></i> Admin Control Center</h2>
+                <button class="btn-danger" onclick="adminLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout Admin</button>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="switchAdminTab('jobs-tab')">Manage Jobs</button>
+                <button class="tab-btn" onclick="switchAdminTab('applicants-tab')">View Applicants</button>
+                <button class="tab-btn" onclick="switchAdminTab('banners-tab')">Manage Banners</button>
+            </div>
+
+            <!-- Manage Jobs Tab -->
+            <div id="jobs-tab" class="admin-tab-content active">
+                <h3>Post New Job</h3>
+                <form id="add-job-form" onsubmit="handlePostJob(event)">
+                    <div class="form-grid">
+                        <input type="text" id="admin-job-title" placeholder="Job Title (e.g. Senior Software Engineer)" required>
+                        <input type="text" id="admin-job-timing" placeholder="Timing (e.g. Full-Time, 9 AM - 5 PM)" required>
+                        <input type="text" id="admin-job-salary" placeholder="Salary Range (e.g. PKR 80,000 - 120,000)" required>
+                        <input type="text" id="admin-job-location" placeholder="Location / City (e.g. Multan)" required>
+                        <input type="text" id="admin-job-edu" placeholder="Required Education (e.g. Bachelor in CS)" required>
+                    </div>
+                    <textarea id="admin-job-details" placeholder="Detailed Job Description & Requirements..." rows="4" required></textarea>
+                    <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Publish Job Post</button>
+                </form>
+
+                <h3 style="margin-top: 30px;">Existing Active Job Listings</h3>
+                <div id="admin-jobs-list" class="admin-jobs-table-container"></div>
+            </div>
+
+            <!-- View Applicants Tab -->
+            <div id="applicants-tab" class="admin-tab-content">
+                <h3>Candidate Applications</h3>
+                <div id="admin-applicants-list"></div>
+            </div>
+
+            <!-- Manage Banners Tab -->
+            <div id="banners-tab" class="admin-tab-content">
+                <h3>Upload Slider Banners (Max 7)</h3>
+                <input type="file" id="banner-file-input" accept="image/*" multiple onchange="uploadBannerImages(event)">
+                <div id="admin-banner-preview" class="admin-banner-grid"></div>
+            </div>
+        </section>
+
+        <!-- MULTI-STEP APPLICATION FORM SECTION -->
+        <section id="apply-section" class="content-section">
+            <div class="form-wizard-container">
+                <div class="wizard-header">
+                    <h2 id="wizard-job-title">Job Application</h2>
+                    <div class="wizard-steps-indicator">
+                        <span class="step-dot active" id="dot-1">1</span>
+                        <span class="step-dot" id="dot-2">2</span>
+                        <span class="step-dot" id="dot-3">3</span>
+                        <span class="step-dot" id="dot-4">4</span>
+                    </div>
+                </div>
+
+                <form id="application-form" onsubmit="submitApplication(event)">
+                    <!-- Step 1: Personal Details -->
+                    <div class="wizard-step active" id="step-1">
+                        <h3>Step 1: Personal Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="app-name" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>CNIC Number</label>
+                                <input type="text" id="app-cnic" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile Number</label>
+                                <input type="text" id="app-mobile" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Profile Picture (Upload from PC/Mobile)</label>
+                                <input type="file" id="app-pic" accept="image/*" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Father's Name</label>
+                                <input type="text" id="app-father" placeholder="Enter Father's Name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Marital Status</label>
+                                <select id="app-marital" required>
+                                    <option value="Single">Single</option>
+                                    <option value="Married">Married</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="app-email" placeholder="example@email.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Province</label>
+                                <select id="app-province" required>
+                                    <option value="Punjab">Punjab</option>
+                                    <option value="Sindh">Sindh</option>
+                                    <option value="KPK">KPK</option>
+                                    <option value="Balochistan">Balochistan</option>
+                                    <option value="Islamabad">Islamabad</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>City</label>
+                                <input type="text" id="app-city" placeholder="e.g. Multan, Lahore..." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Driving License (Optional)</label>
+                                <select id="app-license">
+                                    <option value="None">None</option>
+                                    <option value="Car">Car</option>
+                                    <option value="Motorcycle">Motorcycle</option>
+                                    <option value="Both">Both</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="wizard-buttons">
+                            <button type="button" class="btn-primary" onclick="nextStep(2)">Next: Education <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Education -->
+                    <div class="wizard-step" id="step-2">
+                        <h3>Step 2: Educational Background</h3>
+                        <div class="education-adder form-grid">
+                            <select id="edu-degree">
+                                <option value="Middle">Middle</option>
+                                <option value="Matric">Matric</option>
+                                <option value="Inter / F.A / F.Sc">Inter / F.A / F.Sc</option>
+                                <option value="Bachelor">Bachelor</option>
+                                <option value="Master">Master</option>
+                                <option value="M.Phil / MS">M.Phil / MS</option>
+                                <option value="Ph.D">Ph.D</option>
+                            </select>
+                            <input type="text" id="edu-institute" placeholder="Institute / Board Name">
+                            <input type="text" id="edu-year" placeholder="Passing Year (e.g. 2023)">
+                            <input type="number" id="edu-obtained" placeholder="Obtained Marks">
+                            <input type="number" id="edu-total" placeholder="Total Marks">
+                            <button type="button" class="btn-secondary" onclick="addEducationRow()"><i class="fa-solid fa-plus"></i> Add Qualification</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="edu-table">
+                                <thead>
+                                    <tr>
+                                        <th>Degree</th>
+                                        <th>Institute</th>
+                                        <th>Year</th>
+                                        <th>Marks</th>
+                                        <th>Percentage</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="edu-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div class="wizard-buttons">
+                            <button type="button" class="btn-secondary" onclick="nextStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                            <button type="button" class="btn-primary" onclick="nextStep(3)">Next: Experience <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Experience -->
+                    <div class="wizard-step" id="step-3">
+                        <h3>Step 3: Work Experience</h3>
+                        <div class="experience-adder form-grid">
+                            <input type="text" id="exp-company" placeholder="Company / Organization Name">
+                            <input type="text" id="exp-role" placeholder="Job Title / Designation">
+                            <input type="date" id="exp-from" placeholder="From Date">
+                            <input type="date" id="exp-to" placeholder="To Date">
+                            <button type="button" class="btn-secondary" onclick="addExperienceRow()"><i class="fa-solid fa-plus"></i> Add Experience</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="exp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Designation</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="exp-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div class="wizard-buttons">
+                            <button type="button" class="btn-secondary" onclick="nextStep(2)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                            <button type="button" class="btn-primary" onclick="nextStep(4)">Next: Review & Submit <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Submit & Review -->
+                    <div class="wizard-step" id="step-4">
+                        <h3>Step 4: Review & Submit</h3>
+                        <div class="review-box">
+                            <p>Please review your details carefully before final submission. Once submitted, your application will be assigned an official Application ID and compiled into a professional A4 CV PDF.</p>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="terms-check" required> I solemnly declare that all provided information is correct and true to the best of my knowledge.
+                            </label>
+                        </div>
+                        <div class="wizard-buttons">
+                            <button type="button" class="btn-secondary" onclick="nextStep(3)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                            <button type="submit" class="btn-primary"><i class="fa-solid fa-check-double"></i> Submit Application</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- AUTHENTICATION MODAL -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <h2 id="auth-modal-title">Candidate Portal Login</h2>
+            <div id="auth-form-container">
+                <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+                    <div class="form-group" id="group-name" style="display:none;">
+                        <label>Full Name</label>
+                        <input type="text" id="auth-name" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>CNIC Number / Master Key</label>
+                        <input type="text" id="auth-cnic" placeholder="e.g. 36302-1234567-1 or Admin Key" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="text" id="auth-mobile" placeholder="e.g. 03265727500" required>
+                    </div>
+                    <div class="form-group" id="group-pass">
+                        <label>Password</label>
+                        <input type="password" id="auth-password" placeholder="Enter password" required>
+                    </div>
+                    <div class="form-group" id="group-pass-confirm" style="display:none;">
+                        <label>Confirm Password</label>
+                        <input type="password" id="auth-password-confirm" placeholder="Confirm password">
+                    </div>
+                    <button type="submit" id="auth-submit-btn" class="btn-primary" style="width:100%; margin-top:15px;">Login</button>
+                </form>
+                <p id="auth-switch-text" class="auth-switch">Don't have an account? <a href="#" onclick="toggleAuthMode()">Register Now</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JOB DETAILS MODAL -->
+    <div id="job-details-modal" class="modal">
+        <div class="modal-content job-detail-box">
+            <span class="close-modal" onclick="closeJobModal()">&times;</span>
+            <h2 id="modal-job-title">Job Title</h2>
+            <div class="job-meta-badges">
+                <span id="modal-job-timing"><i class="fa-solid fa-clock"></i> Full-Time</span>
+                <span id="modal-job-salary"><i class="fa-solid fa-money-bill-wave"></i> PKR 50,000</span>
+                <span id="modal-job-location"><i class="fa-solid fa-location-dot"></i> Multan</span>
+                <span id="modal-job-edu"><i class="fa-solid fa-graduation-cap"></i> Bachelor</span>
+            </div>
+            <hr>
+            <h3>Job Description</h3>
+            <p id="modal-job-desc">Detailed requirements...</p>
+            <div style="margin-top: 25px; text-align: right;">
+                <button class="btn-primary" id="modal-apply-btn" onclick="triggerApplyFromModal()"><i class="fa-solid fa-paper-plane"></i> Apply Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HIDDEN CV TEMPLATE FOR PDF GENERATION -->
+    <div id="pdf-template-wrapper" style="display:none;">
+        <div id="cv-printable-area" class="cv-pdf-container">
+            <div class="cv-header">
+                <img id="cv-img" src="" alt="Candidate Photo">
+                <div>
+                    <h1 id="cv-name">Candidate Name</h1>
+                    <p><strong>Applied Position:</strong> <span id="cv-applied-job">Job Title</span></p>
+                    <p><strong>Application ID:</strong> <span id="cv-appid" style="color:#004BFE; font-weight:bold;"></span></p>
+                </div>
+            </div>
+            <hr>
+            <div class="cv-body">
+                <h3>Personal Information</h3>
+                <p><strong>CNIC:</strong> <span id="cv-cnic"></span> | <strong>Mobile:</strong> <span id="cv-mobile"></span> | <strong>Email:</strong> <span id="cv-email"></span></p>
+                <p><strong>Father's Name:</strong> <span id="cv-father"></span> | <strong>Marital Status:</strong> <span id="cv-marital"></span> | <strong>Location:</strong> <span id="cv-location"></span></p>
+                
+                <h3>Educational Qualifications</h3>
+                <table class="cv-table" id="cv-edu-table">
+                    <thead><tr><th>Degree</th><th>Institute</th><th>Year</th><th>Marks</th><th>%</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+
+                <h3>Work Experience</h3>
+                <table class="cv-table" id="cv-exp-table">
+                    <thead><tr><th>Company</th><th>Designation</th><th>From</th><th>To</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="cv-footer">
+                <p>Real Job Bank | Official Verification Helpline: +92 326 5727500</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
